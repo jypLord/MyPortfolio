@@ -154,6 +154,28 @@ export default function AutoInvestPage() {
     setFormError("");
   }
 
+  function handleDeleteItem(itemId) {
+    setSavedItems((current) => {
+      const nextItems = current.filter((item) => item.id !== itemId);
+
+      if (!nextItems.length) {
+        setIsMonitoring(false);
+      }
+
+      return nextItems;
+    });
+
+    if (editingItemId === itemId) {
+      setEditingItemId(null);
+      setSymbol("");
+      setBuyAmount("");
+      setBaseline("");
+    }
+
+    setFormMessage("저장한 종목을 삭제했습니다.");
+    setFormError("");
+  }
+
   return (
     <div className="app">
       <Navbar />
@@ -200,16 +222,30 @@ export default function AutoInvestPage() {
             <ul className="autoWatchList">
               {savedItems.map((item, index) => (
                 <li key={item.id}>
-                  <button
-                    type="button"
-                    className={`autoWatchItem${editingItemId === item.id ? " isSelected" : ""}`}
-                    onClick={() => handleSelectItem(item)}
-                  >
-                    <span className="autoWatchIndex">{index + 1}</span>
-                    <span className="autoWatchSymbol">{item.symbol}</span>
-                    <span className="autoWatchMeta">금액 {item.buyAmount.toLocaleString()}원</span>
-                    <span className="autoWatchMeta">기준가 {item.baseline.toLocaleString()}원</span>
-                  </button>
+                  <div className={`autoWatchItem${editingItemId === item.id ? " isSelected" : ""}`}>
+                    <button
+                      type="button"
+                      className="autoWatchSelect"
+                      onClick={() => handleSelectItem(item)}
+                    >
+                      <span className="autoWatchIndex">{index + 1}</span>
+                      <span className="autoWatchSymbol">{item.symbol}</span>
+                      <span className="autoWatchMeta">금액 {item.buyAmount.toLocaleString()}원</span>
+                      <span className="autoWatchMeta">기준가 {item.baseline.toLocaleString()}원</span>
+                    </button>
+
+                    <div className="autoWatchActions">
+                      <button
+                        type="button"
+                        className="autoDeleteBtn"
+                        aria-label={`${item.symbol} 삭제`}
+                        onClick={() => handleDeleteItem(item.id)}
+                      >
+                        <span aria-hidden="true">×</span>
+                        <span className="autoDeleteHint" role="tooltip">삭제하기</span>
+                      </button>
+                    </div>
+                  </div>
                 </li>
               ))}
             </ul>
