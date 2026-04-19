@@ -40,11 +40,23 @@ function applySimulatedPriceToSeries(series, simulatedPrice) {
     return series;
   }
 
+  const nextOpen = Number.isFinite(lastCandle.open) ? lastCandle.open : lastCandle.close;
+  const nextHigh = Math.max(
+    nextOpen,
+    Number.isFinite(lastCandle.high) ? lastCandle.high : nextOpen,
+    simulatedPrice,
+  );
+  const nextLow = Math.min(
+    nextOpen,
+    Number.isFinite(lastCandle.low) ? lastCandle.low : nextOpen,
+    simulatedPrice,
+  );
+
   const nextCandle = {
     ...lastCandle,
-    open: simulatedPrice,
-    high: simulatedPrice,
-    low: simulatedPrice,
+    open: nextOpen,
+    high: nextHigh,
+    low: nextLow,
     close: simulatedPrice,
   };
 
@@ -58,13 +70,19 @@ export default function MonitoringChartCard({ item }) {
     fetchError,
     statusMessage,
   } = useChartSeries(item.symbol);
-  const [simulatedPrice, setSimulatedPrice] = useState(null);
+  const [priceOverride, setPriceOverride] = useState(null);
   const [isExecuted, setIsExecuted] = useState(false);
   const [hoveredAction, setHoveredAction] = useState("");
   const lastObservedPriceRef = useRef(null);
   const executionHideTimerRef = useRef(null);
   const hasSeries = series.length > 0;
-  const latestClose = series[series.length - 1]?.close;
+  const lastCandle = series[series.length - 1];
+  const latestClose = lastCandle?.close;
+  const latestTimestamp = lastCandle?.timestamp ?? lastCandle?.time ?? null;
+  const simulatedPrice =
+    priceOverride && priceOverride.timestamp === latestTimestamp
+      ? priceOverride.price
+      : latestClose;
   const displayedSeries = applySimulatedPriceToSeries(series, simulatedPrice);
 
   function showExecutionNotice() {
@@ -93,25 +111,39 @@ export default function MonitoringChartCard({ item }) {
     }
 
     const previousPrice = lastObservedPriceRef.current;
-    const shouldExecute = hasReachedBaseline(previousPrice, latestClose, item.baseline);
-    lastObservedPriceRef.current = latestClose;
-    setSimulatedPrice(latestClose);
+    const shouldExecute = hasReachedBaseline(previousPrice, simulatedPrice, item.baseline);
+    lastObservedPriceRef.current = simulatedPrice;
 
     if (shouldExecute) {
-      showExecutionNotice();
+      const timerId = window.setTimeout(() => {
+        showExecutionNotice();
+      }, 0);
+
+      return () => {
+        window.clearTimeout(timerId);
+      };
     }
-  }, [item.baseline, latestClose]);
+  }, [item.baseline, latestClose, simulatedPrice]);
 
   function handleAdjustPrice(direction) {
-    setSimulatedPrice((currentPrice) => {
-      const nextPrice = adjustPriceByPercent(currentPrice, direction);
+    setPriceOverride(() => {
+      const basePrice = Number.isFinite(simulatedPrice) ? simulatedPrice : latestClose;
 
-      if (hasReachedBaseline(currentPrice, nextPrice, item.baseline)) {
+      if (!Number.isFinite(basePrice)) {
+        return null;
+      }
+
+      const nextPrice = adjustPriceByPercent(basePrice, direction);
+
+      if (hasReachedBaseline(basePrice, nextPrice, item.baseline)) {
         showExecutionNotice();
       }
 
       lastObservedPriceRef.current = nextPrice;
-      return nextPrice;
+      return {
+        price: nextPrice,
+        timestamp: latestTimestamp,
+      };
     });
   }
 

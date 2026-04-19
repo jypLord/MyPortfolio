@@ -151,8 +151,13 @@ export default function useChartSeries(symbol) {
 
   useEffect(() => {
     if (!symbol || !HAS_API_CONFIG) {
-      setState(createInitialState(symbol));
-      return undefined;
+      const timerId = window.setTimeout(() => {
+        setState(createInitialState(symbol));
+      }, 0);
+
+      return () => {
+        window.clearTimeout(timerId);
+      };
     }
 
     let eventSource = null;
