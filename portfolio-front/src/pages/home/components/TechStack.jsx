@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
-import "../projectCtaButton/ProjectCtaButton.css";
+import "./ProjectCtaButton.css";
 import "./TechStack.css";
 
 const stacks = [

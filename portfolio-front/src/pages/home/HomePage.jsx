@@ -1,7 +1,7 @@
-import Navbar from "../../common/components/navbar/Navbar.jsx";
-import Hero from "./hero/Hero.jsx";
-import TechStack from "./techStack/TechStack.jsx";
-import Contact from "./contact/Contact.jsx";
+import Navbar from "../../shared/components/navbar/Navbar.jsx";
+import Hero from "./components/Hero.jsx";
+import TechStack from "./components/TechStack.jsx";
+import Contact from "./components/Contact.jsx";
 
 
 export default function HomePage() {

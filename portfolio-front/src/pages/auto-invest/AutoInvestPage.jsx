@@ -1,16 +1,16 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
-import Navbar from "../../common/components/navbar/Navbar.jsx";
-import AutoInvestHeader from "../../components/autoInvest/AutoInvestHeader.jsx";
-import UserInputForm from "../../components/autoInvest/UserInputForm.jsx";
-import { MAX_WATCH_ITEMS } from "../../constants/autoInvest";
+import Navbar from "../../shared/components/navbar/Navbar.jsx";
+import AutoInvestHeader from "../../features/auto-invest/components/AutoInvestHeader.jsx";
+import UserInputForm from "../../features/auto-invest/components/UserInputForm.jsx";
+import { MAX_WATCH_ITEMS } from "../../features/auto-invest/constants/autoInvest.js";
 import "./AutoInvestPage.css";
 
 let stockValidatorModulePromise;
-const MonitoringChartCard = lazy(() => import("../../components/autoInvest/MonitoringChartCard.jsx"));
+const MonitoringChartCard = lazy(() => import("../../features/auto-invest/components/MonitoringChartCard.jsx"));
 
 function loadStockValidatorModule() {
   if (!stockValidatorModulePromise) {
-    stockValidatorModulePromise = import("../../utils/StockValidator.js");
+    stockValidatorModulePromise = import("../../features/auto-invest/lib/StockValidator.js");
   }
 
   return stockValidatorModulePromise;

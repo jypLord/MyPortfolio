@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import "./Project.css";
+import "./Projects.css";
 
 const projects = [
   {

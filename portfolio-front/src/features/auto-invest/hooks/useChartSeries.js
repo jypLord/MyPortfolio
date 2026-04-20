@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { HAS_API_CONFIG } from "../constants/autoInvest";
+import { HAS_API_CONFIG } from "../constants/autoInvest.js";
 import {
   normalizeChartPoint,
   normalizeSeriesPayload,
   openChartEventSource,
-} from "../services/autoInvestApi";
+} from "../services/autoInvestApi.js";
 
 const MARKET_TIME_ZONE = "Asia/Seoul";
 const MARKET_OPEN_HOUR = 9;

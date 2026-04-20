@@ -1,5 +1,5 @@
-import Navbar from "../common/components/navbar/Navbar.jsx";
-import Projects from "./projectList/Projects.jsx";
+import Navbar from "../../shared/components/navbar/Navbar.jsx";
+import Projects from "../../features/projects/components/Projects.jsx";
 import "./ProjectListPage.css";
 
 export default function ProjectListPage() {

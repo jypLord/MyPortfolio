@@ -1,11 +1,11 @@
 import {
   API_BASE_URL,
   API_STREAM_PATH,
-} from "../constants/autoInvest";
+} from "../constants/autoInvest.js";
 import {
   extractSeries,
   normalizeCandle,
-} from "../utils/chartData";
+} from "../lib/chartData.js";
 
 function buildApiUrl(path) {
   const baseUrl = API_BASE_URL.replace(/\/$/, "");

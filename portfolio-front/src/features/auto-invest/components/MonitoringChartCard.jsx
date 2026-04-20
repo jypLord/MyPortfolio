@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import PriceChart from "./PriceChart.jsx";
-import useChartSeries from "../../hooks/useChartSeries";
+import useChartSeries from "../hooks/useChartSeries.js";
 
 function adjustPriceByPercent(price, direction) {
   const basePrice = Number(price);
@@ -73,8 +73,12 @@ export default function MonitoringChartCard({ item }) {
   const [priceOverride, setPriceOverride] = useState(null);
   const [isExecuted, setIsExecuted] = useState(false);
   const [hoveredAction, setHoveredAction] = useState("");
+  const [showPriceGuide, setShowPriceGuide] = useState(false);
   const lastObservedPriceRef = useRef(null);
   const executionHideTimerRef = useRef(null);
+  const priceGuideShowTimerRef = useRef(null);
+  const priceGuideTimerRef = useRef(null);
+  const hasShownPriceGuideRef = useRef(false);
   const hasSeries = series.length > 0;
   const lastCandle = series[series.length - 1];
   const latestClose = lastCandle?.close;
@@ -102,8 +106,30 @@ export default function MonitoringChartCard({ item }) {
       if (executionHideTimerRef.current) {
         window.clearTimeout(executionHideTimerRef.current);
       }
+      if (priceGuideShowTimerRef.current) {
+        window.clearTimeout(priceGuideShowTimerRef.current);
+      }
+      if (priceGuideTimerRef.current) {
+        window.clearTimeout(priceGuideTimerRef.current);
+      }
     };
   }, []);
+
+  useEffect(() => {
+    if (!hasSeries || hasShownPriceGuideRef.current) {
+      return;
+    }
+
+    hasShownPriceGuideRef.current = true;
+    priceGuideShowTimerRef.current = window.setTimeout(() => {
+      setShowPriceGuide(true);
+      priceGuideShowTimerRef.current = null;
+      priceGuideTimerRef.current = window.setTimeout(() => {
+        setShowPriceGuide(false);
+        priceGuideTimerRef.current = null;
+      }, 3000);
+    }, 0);
+  }, [hasSeries]);
 
   useEffect(() => {
     if (!Number.isFinite(latestClose)) {
@@ -149,6 +175,12 @@ export default function MonitoringChartCard({ item }) {
 
   return (
     <article className="autoChartCard">
+      {showPriceGuide ? (
+        <div className="autoPriceGuideBox">
+          프로젝트의 빠른 체험을 위해 실시간 가격을 조정할 수 있게 했습니다. 실시간 가격이 기준가를
+          터치하면 주문을 체결합니다.
+        </div>
+      ) : null}
       <div className="autoChartTop">
         <div className="autoSymbolBadge">{item.symbol}</div>
         <div className="autoChartControls">

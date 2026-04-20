@@ -320,6 +320,23 @@
   border-top: 7px solid rgba(17, 24, 39, 0.94);
 }
 
+.autoPriceGuideBox{
+  margin: 14px auto 0;
+  width: fit-content;
+  max-width: calc(100% - 28px);
+  padding: 10px 14px;
+  border: 1px solid rgba(17, 24, 39, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #374151;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+  word-break: keep-all;
+}
+
 .autoSymbolBadge{
   display: inline-flex;
   align-items: center;
