@@ -86,10 +86,10 @@ function getNextModeTransition(now = new Date()) {
 
 function createScheduledMessage(targetTime, snapshotMode) {
   if (snapshotMode) {
-    return `${formatSeoulTime(targetTime)}(KST)에 실시간 연결을 시작합니다.`;
+    return `${formatSeoulTime(targetTime)}에 실시간 연결을 시작합니다.`;
   }
 
-  return `${formatSeoulTime(targetTime)}(KST)에 장마감 스냅샷으로 전환합니다.`;
+  return `${formatSeoulTime(targetTime)}장 종료 되었습니다..`;
 }
 
 function createInitialState(symbol) {
@@ -227,7 +227,7 @@ export default function useChartSeries(symbol) {
           isLoading: false,
           fetchError: "",
           statusMessage: snapshotMode
-            ? `장마감 스냅샷을 ${formatSeoulTime(new Date())}(KST)에 불러왔습니다.`
+            ? `장마감 ${formatSeoulTime(new Date())}에 불러왔습니다.`
             : createScheduledMessage(getNextModeTransition(), false),
         });
 

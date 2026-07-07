@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import PriceChart from "./PriceChart.jsx";
 import useChartSeries from "../hooks/useChartSeries.js";
 
+const PRICE_GUIDE_VISIBLE_MS = 10000;
+
 function adjustPriceByPercent(price, direction) {
   const basePrice = Number(price);
 
@@ -127,7 +129,7 @@ export default function MonitoringChartCard({ item }) {
       priceGuideTimerRef.current = window.setTimeout(() => {
         setShowPriceGuide(false);
         priceGuideTimerRef.current = null;
-      }, 3000);
+      }, PRICE_GUIDE_VISIBLE_MS);
     }, 0);
   }, [hasSeries]);
 

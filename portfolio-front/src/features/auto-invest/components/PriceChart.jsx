@@ -13,6 +13,10 @@ const CURRENT_PRICE_TAG_COLOR = "#03c75a";
 const CHART_HEIGHT = 320;
 const CHART_MARGIN = { top: 12, right: 12, left: 4, bottom: 28 };
 const OVERLAY_VIEWBOX_WIDTH = 1000;
+const MAX_VISIBLE_CANDLES = 20;
+const CANDLE_WIDTH_RATIO = 0.92;
+const MIN_CANDLE_WIDTH = 10;
+const MAX_CANDLE_WIDTH = 96;
 const MIN_VISIBLE_RANGE_RATIO = 0.014;
 const MIN_VISIBLE_RANGE_ABSOLUTE = 700;
 const BASELINE_CANDLE_GAP_RATIO = 0.035;
@@ -242,7 +246,7 @@ function CandleOverlay({ data, currentPrice, baseline, baselineDisplayValue, yDo
   const minDomain = yDomain[0];
   const maxDomain = yDomain[1];
   const slotWidth = data.length > 1 ? plotWidth / (data.length - 1) : plotWidth;
-  const candleWidth = Math.max(12, Math.min(24, slotWidth * 0.72));
+  const candleWidth = clamp(slotWidth * CANDLE_WIDTH_RATIO, MIN_CANDLE_WIDTH, MAX_CANDLE_WIDTH);
   const xCoordinates = data.map((_, index) => plotLeft + slotWidth * index);
 
   return (
@@ -333,11 +337,12 @@ function CandleTooltip({ active, payload, label }) {
 }
 
 export default function PriceChart({ data, baseline, currentPrice, isExecuted }) {
+  const visibleData = data.slice(-MAX_VISIBLE_CANDLES);
   const baselineOk = Number.isFinite(baseline) && baseline > 0;
   const currentPriceOk = Number.isFinite(currentPrice) && currentPrice > 0;
-  const resolvedCurrentPrice = currentPriceOk ? currentPrice : data[data.length - 1]?.close;
+  const resolvedCurrentPrice = currentPriceOk ? currentPrice : visibleData[visibleData.length - 1]?.close;
   const { yDomain, baselineDisplayValue } = getVisualScale(
-    data,
+    visibleData,
     baselineOk ? baseline : null,
     resolvedCurrentPrice,
   );
@@ -345,7 +350,7 @@ export default function PriceChart({ data, baseline, currentPrice, isExecuted })
   return (
     <div className="aiChartWrap">
       <ResponsiveContainer width="100%" height={CHART_HEIGHT}>
-        <ComposedChart data={data} margin={CHART_MARGIN}>
+        <ComposedChart data={visibleData} margin={CHART_MARGIN}>
           <CartesianGrid stroke="rgba(3,199,90,0.08)" vertical={false} />
           <XAxis
             dataKey="time"
@@ -362,7 +367,7 @@ export default function PriceChart({ data, baseline, currentPrice, isExecuted })
         </ComposedChart>
       </ResponsiveContainer>
       <CandleOverlay
-        data={data}
+        data={visibleData}
         currentPrice={resolvedCurrentPrice}
         baseline={baselineOk ? baseline : null}
         baselineDisplayValue={baselineDisplayValue}
